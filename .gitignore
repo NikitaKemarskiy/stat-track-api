@@ -1,0 +1,9 @@
+.idea/
+.vscode/
+dist/
+logfile.log
+node_modules/
+TODO
+.DS_Store
+config/*.js
+!config/default.js
