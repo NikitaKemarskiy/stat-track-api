@@ -73,7 +73,7 @@ const StepsService = {
       }],
     };
 
-    const steps = await Step.find(filter).sort({ from: -1 });
+    const steps = await Step.find(filter).sort({ from: 1 });
 
     const [firstStep] = steps;
     const [lastStep] = steps.slice(-1);

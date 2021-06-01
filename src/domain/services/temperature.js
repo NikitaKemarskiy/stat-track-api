@@ -1,7 +1,6 @@
 const moment = require('moment');
 const Temperature = require('../entities/temperature');
 const { getTimeStepUnitByPrecision, getDateRangeByPeriodAndDate } = require('../../helpers');
-const { times } = require('lodash');
 
 function getTemperatureByPrecision({
   temperature,
@@ -51,7 +50,7 @@ const TemperatureService = {
       },
     };
 
-    const temperature = await Temperature.find(filter).sort({ timestamp: -1 });
+    const temperature = await Temperature.find(filter).sort({ timestamp: 1 });
 
     return getTemperatureByPrecision({
       temperature,
