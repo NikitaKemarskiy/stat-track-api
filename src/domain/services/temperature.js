@@ -13,7 +13,7 @@ function getTemperatureByPrecision({
     let mNext = moment(accum.current).add(1, timeStepUnit);
     let mTimestamp = moment(temperature.timestamp);
 
-    while (mTimestamp.isAfter(mNext)) {
+    while (mTimestamp.isSameOrAfter(mNext)) {
       accum.temperatureByPrecision.push([]);
       accum.current = mNext.toDate();
       mNext.add(1, timeStepUnit);

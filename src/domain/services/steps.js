@@ -15,6 +15,8 @@ function getStepsByPrecision({
     let mTill = moment(step.till);
     let mCurrent = moment(accum.current);
 
+    debugger;
+
     if (mFrom.isBefore(mCurrent)) {
       step.stepsAmount *= (1 - mCurrent.diff(mFrom) / mTill.diff(mFrom));
       mFrom = moment(accum.current);
@@ -23,7 +25,7 @@ function getStepsByPrecision({
     while (!mFrom.isSame(mTill) && mCurrent.isBefore(end)) {
       const mNext = moment(mCurrent).add(1, timeStepUnit);
 
-      if (mTill.isSameOrAfter(mNext)) {
+      if (mFrom.isBefore(mNext) && mTill.isSameOrAfter(mNext)) {
         const stepsAmountPart = step.stepsAmount * (mNext.diff(mFrom) / mTill.diff(mFrom));
         accum.stepsByPrecision[accum.stepsByPrecision.length - 1] += stepsAmountPart;
 
@@ -32,9 +34,12 @@ function getStepsByPrecision({
         mCurrent = moment(mNext);
 
         accum.stepsByPrecision.push(0);
-      } else {
-        accum.stepsByPrecision[accum.stepsByPrecision.length - 1] += steps.stepsAmount;
+      } else if (mFrom.isBefore(mNext)) {
+        accum.stepsByPrecision[accum.stepsByPrecision.length - 1] += step.stepsAmount;
         mFrom = moment(mTill);
+      } else {
+        accum.stepsByPrecision.push(0);
+        mCurrent = moment(mNext);
       }
     }
 
