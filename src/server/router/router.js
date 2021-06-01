@@ -18,4 +18,4 @@ const Router = {
   },
 };
 
-export default Router;
+module.exports = Router;

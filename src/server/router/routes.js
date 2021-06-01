@@ -1,3 +1,6 @@
+const stepsHandlers = require('../handlers/steps');
+const temperatureHandlers = require('../handlers/temperature');
+
 const Routes = {
   isInit: false,
   init: function (router) {
@@ -7,8 +10,14 @@ const Routes = {
 
     this.isInit = true;
 
-    router.put('/api/orders', this.getAuthCheckedHandler(ordersHandlers.read));
+    /*** Steps ***/
+    router.get('/steps/:userId', stepsHandlers.read);
+    router.put('/steps/:userId', stepsHandlers.create);
+
+    /*** Temperature ***/
+    router.get('/temperature/:userId', temperatureHandlers.read);
+    router.put('/temperature/:userId', temperatureHandlers.create);
   },
 };
 
-export default Routes;
+module.exports = Routes;

@@ -23,6 +23,7 @@
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mongoose": "^5.12.12"
   },

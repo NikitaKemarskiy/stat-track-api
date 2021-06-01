@@ -22,4 +22,4 @@ const DB = {
 	}
 };
 
-export default DB;
+module.exports = DB;

@@ -1,6 +1,6 @@
 module.exports = {
   db: {
-    url: 'mongodb://127.0.0.1:27017/ts-bot'
+    url: 'mongodb://127.0.0.1:27017/stat-track-api'
   },
   server: {
     ssl: {

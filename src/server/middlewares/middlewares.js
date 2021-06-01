@@ -33,4 +33,4 @@ const Middlewares = {
   },
 };
 
-export default Middlewares;
+module.exports = Middlewares;
