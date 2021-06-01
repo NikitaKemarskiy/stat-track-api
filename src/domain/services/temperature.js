@@ -1,6 +1,7 @@
 const moment = require('moment');
 const Temperature = require('../entities/temperature');
 const { getTimeStepUnitByPrecision, getDateRangeByPeriodAndDate } = require('../../helpers');
+const { times } = require('lodash');
 
 function getTemperatureByPrecision({
   temperature,
@@ -9,20 +10,27 @@ function getTemperatureByPrecision({
 }) {
   const timeStepUnit = getTimeStepUnitByPrecision(precision);
 
-  return temperature.reduce((accum, temperature) => {
+  const { temperatureByPrecision } = temperature.reduce((accum, temperature) => {
     let mNext = moment(accum.current).add(1, timeStepUnit);
     let mTimestamp = moment(temperature.timestamp);
 
-    if (mTimestamp.isBefore(mNext)) {
-      accum.temperatureByPrecision[accum.temperatureByPrecision.length - 1].push(temperature.temperature);
-    } else {
+    while (mTimestamp.isAfter(mNext)) {
+      accum.temperatureByPrecision.push([]);
       accum.current = mNext.toDate();
-      accum.temperatureByPrecision.push([temperature.temperature]);
+      mNext.add(1, timeStepUnit);
     }
+
+    accum.temperatureByPrecision[accum.temperatureByPrecision.length - 1].push(temperature.temperature);
+
+    return accum;
   }, {
     temperatureByPrecision: [[]],
     current: new Date(start),
-  })
+  });
+
+  return temperatureByPrecision.map(
+    (items) => items.reduce((accum, item) => accum + item, 0) / items.length,
+  );
 }
 
 const TemperatureService = {

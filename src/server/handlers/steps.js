@@ -11,13 +11,17 @@ const handlers = {
 		}
 
     try {
-			await StepsService.getSteps({
+			const steps = await StepsService.getSteps({
         userId,
         precision: parseInt(precision),
         period: parseInt(period),
-        date: new Date(date),
+        date: parseInt(date),
       });
+
 			ctx.status = 200;
+      ctx.body = {
+        steps,
+      };
 		} catch (err) {
 			console.error(err);
 			ctx.status = 500;

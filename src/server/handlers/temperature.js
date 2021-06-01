@@ -11,13 +11,17 @@ const handlers = {
 		}
 
     try {
-			await TemperatureService.getTemperature({
+			const temperature = await TemperatureService.getTemperature({
         userId,
-        precision,
-        period,
-        date
+        precision: parseInt(precision),
+        period: parseInt(period),
+        date: parseInt(date),
       });
+
 			ctx.status = 200;
+      ctx.body = {
+        temperature,
+      };
 		} catch (err) {
 			console.error(err);
 			ctx.status = 500;

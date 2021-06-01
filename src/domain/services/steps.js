@@ -10,40 +10,43 @@ function getStepsByPrecision({
 }) {
   const timeStepUnit = getTimeStepUnitByPrecision(precision);
 
-  return steps
-    .reduce((accum, step) => {
-      let mFrom = moment(step.from);
-      let mTill = moment(step.till);
-      let mCurrent = moment(accum.current);
+  const { stepsByPrecision } = steps.reduce((accum, step) => {
+    let mFrom = moment(step.from);
+    let mTill = moment(step.till);
+    let mCurrent = moment(accum.current);
 
-      if (mFrom.isBefore(mCurrent)) {
-        step.stepsAmount *= (1 - mCurrent.diff(mFrom) / mTill.diff(mFrom));
-        mFrom = moment(accum.current);
+    if (mFrom.isBefore(mCurrent)) {
+      step.stepsAmount *= (1 - mCurrent.diff(mFrom) / mTill.diff(mFrom));
+      mFrom = moment(accum.current);
+    }
+
+    while (!mFrom.isSame(mTill) && mCurrent.isBefore(end)) {
+      const mNext = moment(mCurrent).add(1, timeStepUnit);
+
+      if (mTill.isSameOrAfter(mNext)) {
+        const stepsAmountPart = step.stepsAmount * (mNext.diff(mFrom) / mTill.diff(mFrom));
+        accum.stepsByPrecision[accum.stepsByPrecision.length - 1] += stepsAmountPart;
+
+        step.stepsAmount -= stepsAmountPart;
+        mFrom = moment(mNext);
+        mCurrent = moment(mNext);
+
+        accum.stepsByPrecision.push(0);
+      } else {
+        accum.stepsByPrecision[accum.stepsByPrecision.length - 1] += steps.stepsAmount;
+        mFrom = moment(mTill);
       }
+    }
 
-      while (!mFrom.isSame(mTill) && mCurrent.isBefore(end)) {
-        const mNext = moment(mCurrent).add(1, timeStepUnit);
+    accum.current = mCurrent.toDate();
 
-        if (mTill.isSameOrAfter(mNext)) {
-          const stepsAmountPart = step.stepsAmount * (mNext.diff(mFrom) / mTill.diff(mFrom));
-          accum.stepsByPrecision[accum.stepsByPrecision.length - 1] += stepsAmountPart;
+    return accum;
+  }, {
+    stepsByPrecision: [0],
+    current: new Date(start),
+  });
 
-          step.stepsAmount -= stepsAmountPart;
-          mFrom = moment(mNext);
-          mCurrent = moment(mNext);
-
-          accum.stepsByPrecision.push(0);
-        } else {
-          accum.stepsByPrecision[accum.stepsByPrecision.length - 1] += steps.stepsAmount;
-          mFrom = moment(mTill);
-        }
-      }
-
-      accum.current = mCurrent.toDate();
-    }, {
-      stepsByPrecision: [0],
-      current: new Date(start),
-    });
+  return stepsByPrecision;
 }
 
 const StepsService = {
