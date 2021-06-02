@@ -88,7 +88,7 @@ const TemperatureService = {
       return accum;
     }, {});
   
-    summary.avg /= temperature.length;
+    summary.avgTemperature /= temperature.length;
 
     return summary;
   },
