@@ -47,6 +47,30 @@ const handlers = {
       ctx.status = 500;
     }
   },
+  readSummary: async (ctx) => {
+    const { userId } = ctx.params;
+    const { period, date } = ctx.request.query;
+
+    if (!userId || !period || !date) {
+			return (ctx.status = 400);
+		}
+
+    try {
+			const temperature = await TemperatureService.getTemperatureSummary({
+        userId,
+        period: parseInt(period),
+        date: parseInt(date),
+      });
+
+			ctx.status = 200;
+      ctx.body = {
+        temperature,
+      };
+		} catch (err) {
+			console.error(err);
+			ctx.status = 500;
+		}
+  },
 };
 
 module.exports = handlers;

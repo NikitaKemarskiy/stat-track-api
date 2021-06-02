@@ -48,6 +48,30 @@ const handlers = {
 			ctx.status = 500;
 		}
 	},
+  readSummary: async (ctx) => {
+    const { userId } = ctx.params;
+    const { period, date } = ctx.request.query;
+
+    if (!userId || !period || !date) {
+			return (ctx.status = 400);
+		}
+
+    try {
+			const steps = await StepsService.getStepsSummary({
+        userId,
+        period: parseInt(period),
+        date: parseInt(date),
+      });
+
+			ctx.status = 200;
+      ctx.body = {
+        steps,
+      };
+		} catch (err) {
+			console.error(err);
+			ctx.status = 500;
+		}
+  },
 };
 
 module.exports = handlers;

@@ -2,6 +2,8 @@ const moment = require('moment');
 const Step = require('../entities/step');
 const { getTimeStepUnitByPrecision, getDateRangeByPeriodAndDate } = require('../../helpers');
 
+const METERS_IN_STEP = 0.762;
+
 function getStepsByPrecision({
   steps,
   precision,
@@ -14,8 +16,6 @@ function getStepsByPrecision({
     let mFrom = moment(step.from);
     let mTill = moment(step.till);
     let mCurrent = moment(accum.current);
-
-    debugger;
 
     if (mFrom.isBefore(mCurrent)) {
       step.stepsAmount *= (1 - mCurrent.diff(mFrom) / mTill.diff(mFrom));
@@ -52,6 +52,10 @@ function getStepsByPrecision({
   });
 
   return stepsByPrecision;
+}
+
+function getDistanceFromStepsInKilometers(steps) {
+  return steps * METERS_IN_STEP / 1e3;
 }
 
 const StepsService = {
@@ -103,6 +107,63 @@ const StepsService = {
       start,
       end,
     });
+  },
+
+  async getStepsSummary({
+    userId,
+    period,
+    date
+  }) {
+    const { start, end } = getDateRangeByPeriodAndDate(period, date);
+
+    const filter = {
+      userId,
+      $or: [{
+        from: { $gte: start }
+      }, {
+        till: { $gte: start }
+      }],
+      $or: [{
+        from: { $lte: end }
+      }, {
+        till: { $lte: end }
+      }],
+    };
+
+    const steps = await Step.find(filter);
+
+    const summary = steps.reduce((accum, step) => {
+      let mFrom = moment(step.from);
+      let mTill = moment(step.till);
+      let mStart = moment(start);
+      let mEnd = moment(end);
+
+      const speedKilometersPerHour = getDistanceFromStepsInKilometers(step.stepsAmount)
+        / moment.duration(mTill.diff(mFrom)).asHours();
+
+      accum.maxSpeed = accum.maxSpeed && accum.maxSpeed > speedKilometersPerHour
+        ? accum.maxSpeed
+        : speedKilometersPerHour;
+      accum.avgSpeed = (accum.avgSpeed || 0) + speedKilometersPerHour;
+
+      if (mFrom.isBefore(start)) {
+        step.stepsAmount *= (1 - mStart.diff(mFrom) / mTill.diff(mFrom));
+        mFrom = moment(start);
+      }
+
+      if (mTill.isAfter(end)) {
+        step.stepsAmount *= (1 - mTill.diff(mEnd) / mTill.diff(mFrom));
+        mTill = moment(end);
+      }
+
+      accum.distance = (accum.distance || 0) + getDistanceFromStepsInKilometers(step.stepsAmount);
+  
+      return accum;
+    }, {});
+
+    summary.avgSpeed /= steps.length;
+
+    return summary;
   },
 
 	/** Create **/

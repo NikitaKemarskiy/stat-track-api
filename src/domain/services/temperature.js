@@ -59,6 +59,40 @@ const TemperatureService = {
     });
   },
 
+  async getTemperatureSummary({
+    userId,
+    period,
+    date
+  }) {
+    const { start, end } = getDateRangeByPeriodAndDate(period, date);
+
+    const filter = {
+      userId,
+      timestamp: {
+        $gte: start,
+        $lte: end,
+      },
+    };
+
+    const temperature = await Temperature.find(filter);
+
+    const summary = temperature.reduce((accum, { temperature }) => {
+      accum.min = accum.min && accum.min < temperature
+        ? accum.min
+        : temperature;
+      accum.max = accum.max && accum.max > temperature
+        ? accum.max
+        : temperature;
+      accum.avg = (accum.avg || 0) + temperature;
+
+      return accum;
+    }, {});
+  
+    summary.avg /= temperature.length;
+
+    return summary;
+  },
+
 	/** Create **/
 	async addTemperature(data) {
 		return Temperature.create(data);
