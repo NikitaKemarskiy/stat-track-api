@@ -77,13 +77,13 @@ const TemperatureService = {
     const temperature = await Temperature.find(filter);
 
     const summary = temperature.reduce((accum, { temperature }) => {
-      accum.min = accum.min && accum.min < temperature
+      accum.minTemperature = accum.min && accum.min < temperature
         ? accum.min
         : temperature;
-      accum.max = accum.max && accum.max > temperature
+      accum.maxTemperature = accum.max && accum.max > temperature
         ? accum.max
         : temperature;
-      accum.avg = (accum.avg || 0) + temperature;
+      accum.avgTemperature = (accum.avg || 0) + temperature;
 
       return accum;
     }, {});

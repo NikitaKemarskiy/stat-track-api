@@ -57,7 +57,7 @@ const handlers = {
 		}
 
     try {
-			const steps = await StepsService.getStepsSummary({
+			const stepsSummary = await StepsService.getStepsSummary({
         userId,
         period: parseInt(period),
         date: parseInt(date),
@@ -65,7 +65,7 @@ const handlers = {
 
 			ctx.status = 200;
       ctx.body = {
-        steps,
+        stepsSummary,
       };
 		} catch (err) {
 			console.error(err);

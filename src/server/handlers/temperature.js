@@ -56,16 +56,14 @@ const handlers = {
 		}
 
     try {
-			const temperature = await TemperatureService.getTemperatureSummary({
+			const temperatureSummary = await TemperatureService.getTemperatureSummary({
         userId,
         period: parseInt(period),
         date: parseInt(date),
       });
 
 			ctx.status = 200;
-      ctx.body = {
-        temperature,
-      };
+      ctx.body = temperatureSummary;
 		} catch (err) {
 			console.error(err);
 			ctx.status = 500;
