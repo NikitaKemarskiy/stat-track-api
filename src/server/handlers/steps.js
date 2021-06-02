@@ -19,9 +19,7 @@ const handlers = {
       });
 
 			ctx.status = 200;
-      ctx.body = {
-        steps,
-      };
+      ctx.body = steps;
 		} catch (err) {
 			console.error(err);
 			ctx.status = 500;

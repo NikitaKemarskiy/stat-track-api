@@ -19,9 +19,7 @@ const handlers = {
       });
 
 			ctx.status = 200;
-      ctx.body = {
-        temperature,
-      };
+      ctx.body = temperature;
 		} catch (err) {
 			console.error(err);
 			ctx.status = 500;
