@@ -4,7 +4,7 @@ const StepSchema = new mongoose.Schema({
   stepsAmount: { type: Number, required: true, },
   from: { type: Date, required: true, },
   till: { type: Date, required: true, },
-  userId: { type: Number, required: true, },
+  userId: { type: String, required: true, },
   createdAt: { type: Date, required: true, default: () => new Date() },
 })
 
